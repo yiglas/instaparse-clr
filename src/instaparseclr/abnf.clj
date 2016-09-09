@@ -1,11 +1,11 @@
-(ns instaparse.abnf
+(ns instaparseclr.abnf
   "This is the context free grammar that recognizes ABNF notation."
   (:refer-clojure :exclude [cat])
-  (:require [instaparse.transform :as t]
-            [instaparse.cfg :as cfg]
-            [instaparse.gll :as gll]
-            [instaparse.reduction :as red])
-  (:use instaparse.combinators-source))
+  (:require [instaparseclr.transform :as t]
+            [instaparseclr.cfg :as cfg]
+            [instaparseclr.gll :as gll]
+            [instaparseclr.reduction :as red])
+  (:use instaparseclr.combinators-source))
 
 (def ^:dynamic *case-insensitive*
   "This is normally set to false, in which case the non-terminals
@@ -193,7 +193,7 @@ Useful for combining with other combinators."
   [spec]
   (let [tree (gll/parse abnf-parser :rules-or-parser spec false)]
     (cond
-      (instance? instaparse.gll.Failure tree)
+      (instance? instaparseclr.gll.Failure tree)
       (throw (RuntimeException. (str "Error parsing grammar specification:\n"
                                      (with-out-str (println tree)))))
       (= :alternation (ffirst tree))
@@ -203,7 +203,7 @@ Useful for combining with other combinators."
 
 (defn build-parser [spec output-format]
   (let [rule-tree (gll/parse abnf-parser :rulelist spec false)]
-    (if (instance? instaparse.gll.Failure rule-tree)
+    (if (instance? instaparseclr.gll.Failure rule-tree)
       (throw (RuntimeException. (str "Error parsing grammar specification:\n"
                                      (with-out-str (println rule-tree)))))
       (let [rules (t/transform abnf-transformer rule-tree)

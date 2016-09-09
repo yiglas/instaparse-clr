@@ -1,7 +1,7 @@
-(ns instaparse.repeat-test
+(ns instaparseclr.repeat-test
   (:use clojure.test)
-  (:require [instaparse.core :as insta]
-            [instaparse.repeat :as repeat]
+  (:require [instaparseclr.core :as insta]
+            [instaparseclr.repeat :as repeat]
             ))
 
 (def text (slurp "https://gist.github.com/lewang/5900166/raw/3d23bd12bcb01036473c6e425e3798517b17820a/input_small.txt"))

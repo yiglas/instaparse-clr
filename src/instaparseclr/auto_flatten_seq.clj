@@ -1,4 +1,4 @@
-(ns instaparse.auto-flatten-seq
+(ns instaparseclr.auto-flatten-seq
   (:import clojure.lang.PersistentVector)
   (:require [clojure.core.protocols :refer [IKVReduce]]))
 

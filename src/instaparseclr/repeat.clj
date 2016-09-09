@@ -1,10 +1,10 @@
-(ns instaparse.repeat
-  (:require [instaparse.gll :as gll] 
-            [instaparse.combinators-source :as c]
-            [instaparse.auto-flatten-seq :as afs]
-            [instaparse.viz :as viz]
-            [instaparse.reduction :as red]
-            [instaparse.failure :as fail]))
+(ns instaparseclr.repeat
+  (:require [instaparseclr.gll :as gll] 
+            [instaparseclr.combinators-source :as c]
+            [instaparseclr.auto-flatten-seq :as afs]
+            [instaparseclr.viz :as viz]
+            [instaparseclr.reduction :as red]
+            [instaparseclr.failure :as fail]))
 
 (defn empty-result? [result]
   (or (and (vector? result) (= (count result) 1))
@@ -64,8 +64,8 @@
                               (afs/convert-afs-to-vec 
                                 (afs/conj-flat parses parse))
                               {:optimize :memory
-                               :instaparse.gll/start-index 0
-                               :instaparse.gll/end-index length})
+                               :instaparseclr.gll/start-index 0
+                               :instaparseclr.gll/end-index length})
           :else (recur (long end)
                        (afs/conj-flat parses parse)
                        (select-parse grammar initial-parser text segment end follow-ups)))))))
@@ -88,8 +88,8 @@
                               {:tag root-tag 
                                :content (seq (afs/conj-flat parses parse))}
                               {:optimize :memory
-                               :instaparse.gll/start-index 0
-                               :instaparse.gll/end-index length})
+                               :instaparseclr.gll/start-index 0
+                               :instaparseclr.gll/end-index length})
           :else (recur (long end)
                        (afs/conj-flat parses parse)
                        (select-parse grammar initial-parser text segment end follow-ups)))))))
@@ -111,8 +111,8 @@
           (nil? follow-ups) (gll/safe-with-meta
                               (afs/conj-flat parses parse)
                               {:optimize :memory
-                               :instaparse.gll/start-index 0
-                               :instaparse.gll/end-index length})
+                               :instaparseclr.gll/start-index 0
+                               :instaparseclr.gll/end-index length})
           :else (recur (long end)
                        (afs/conj-flat parses parse)
                        (select-parse grammar initial-parser text segment end follow-ups)))))))
@@ -139,9 +139,9 @@
               end (get-end header-result)
               repeat-result (repeat-parse-no-tag grammar (:parser repeating-parser) text segment end)
               span-meta {:optimize :memory
-                         :instaparse.gll/start-index 0
-                         :instaparse.gll/end-index length}]
-          (if (or (instance? instaparse.gll.Failure repeat-result)
+                         :instaparseclr.gll/start-index 0
+                         :instaparseclr.gll/end-index length}]
+          (if (or (instance? instaparseclr.gll.Failure repeat-result)
                   (and (= (:tag repeating-parser) :star)
                        (empty-result? repeat-result)))
             failure-signal

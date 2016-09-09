@@ -1,5 +1,5 @@
-(ns instaparse.reduction
-  (:require [instaparse.auto-flatten-seq :as afs]))
+(ns instaparseclr.reduction
+  (:require [instaparseclr.auto-flatten-seq :as afs]))
 
 ;; utilities
 

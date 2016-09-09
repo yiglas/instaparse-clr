@@ -27,7 +27,7 @@ Add the following line to your leiningen dependencies:
 Require instaparse in your namespace header:
 
 	(ns example.core
-	  (:require [instaparse.core :as insta]))
+	  (:require [instaparseclr.core :as insta]))
 
 ### Creating your first parser
 
@@ -359,7 +359,7 @@ To better understand this point, contrast the above parser with this one:
 
 In this parser, the * is *inside* the regular expression, which means that it follows greedy regular expression semantics.  Therefore, the first A eats all the a's it can, leaving no a's for the second A.
 
-For this reason, it is wise to use regular expressions judiciously, mainly to express the patterns of your tokens, and leave the overall task of parsing to instaparse.  Regular expressions can often be tortured and abused into serving as a crude parser, but don't do it!  There's no need; with instaparse, you now have an equally convenient but more expressive tool to bring to bear on parsing problems.
+For this reason, it is wise to use regular expressions judiciously, mainly to express the patterns of your tokens, and leave the overall task of parsing to instaparseclr.  Regular expressions can often be tortured and abused into serving as a crude parser, but don't do it!  There's no need; with instaparse, you now have an equally convenient but more expressive tool to bring to bear on parsing problems.
 
 Here is an example that I think is a tasteful use of regular expressions to split a sentence on whitespaces, categorizing the tokens as words or numbers:
 
@@ -638,7 +638,7 @@ You've also seen both keyword arguments that can be used when building the parse
 
 A parser's job is to turn a string into some kind of tree structure.  What you do with it from there is up to you.  It is delightfully easy to manipulate trees in Clojure.  There are wonderful tools available: enlive, zippers, match, and tree-seq.  But even without those tools, most tree manipulations are straightforward to perform in Clojure with recursion.
 
-Since tree transformations are already so easy to perform in Clojure, there's not much point in building a sophisticated transform library into instaparse.  Nevertheless, I did include one function, `insta/transform`, that addresses the most common transformation needs.
+Since tree transformations are already so easy to perform in Clojure, there's not much point in building a sophisticated transform library into instaparseclr.  Nevertheless, I did include one function, `insta/transform`, that addresses the most common transformation needs.
 
 `insta/transform` takes a map from tree tags to transform functions.  A transform function is defined as a function which takes the children of the tree node as inputs and returns a replacement node.  In other words, if you want to turn all nodes in your tree of the form `[:switch x y]` into `[:switch y x]`, then you'd call:
 
@@ -746,7 +746,7 @@ The trees produced by instaparse are annotated with metadata so that for each su
 	 [:AB [:A "a" "a" "a" "a"] [:B "b" "b"]]]
 
     => (meta (as-and-bs "aaaaabbbaaaabb"))
-    {:instaparse.gll/start-index 0, :instaparse.gll/end-index 14}
+    {:instaparseclr.gll/start-index 0, :instaparseclr.gll/end-index 14}
 
 	=> (insta/span (as-and-bs "aaaaabbbaaaabb"))
 	[0 14]
@@ -767,7 +767,7 @@ As you can see, `insta/span` returns a pair containing the start index (inclusiv
 	 ([7 11] ([7 9] "a" "a") ([9 11] "b" "b"))
 	 ([11 13] ([11 12] "a") ([12 13] "b")))
 
-`insta/span` works on all the tree types produced by instaparse.  Furthermore, when you use `insta/transform` to transform your parse tree, `insta/span` will work on the transformed tree as well -- the span metadata is preserved for every node in the transformed tree to which metadata can be attached.  Keep in mind that although most types of Clojure data support metadata, primitives such as strings or numbers do not, so if you transform any of your nodes into such primitive data types, `insta/span` on those nodes will simply return `nil`.
+`insta/span` works on all the tree types produced by instaparseclr.  Furthermore, when you use `insta/transform` to transform your parse tree, `insta/span` will work on the transformed tree as well -- the span metadata is preserved for every node in the transformed tree to which metadata can be attached.  Keep in mind that although most types of Clojure data support metadata, primitives such as strings or numbers do not, so if you transform any of your nodes into such primitive data types, `insta/span` on those nodes will simply return `nil`.
 
 ##### Line and column information
 
@@ -793,16 +793,16 @@ The additional information is in the metadata, so the tree itself is not visibly
 But now let's inspect the metadata for the overall parse tree.
 
     => (meta parsed-multiline-text-with-line-and-column-metadata)
-    {:instaparse.gll/end-column 15, :instaparse.gll/end-line 2,
-     :instaparse.gll/start-column 1, :instaparse.gll/start-line 1,
-     :instaparse.gll/start-index 0, :instaparse.gll/end-index 29}
+    {:instaparseclr.gll/end-column 15, :instaparseclr.gll/end-line 2,
+     :instaparseclr.gll/start-column 1, :instaparseclr.gll/start-line 1,
+     :instaparseclr.gll/start-index 0, :instaparseclr.gll/end-index 29}
 
 And let's take a look at the metadata for the word "is" on the second line of the text.
 
     => (meta (nth parsed-multiline-text-with-line-and-column-metadata 6))
-    {:instaparse.gll/end-column 8, :instaparse.gll/end-line 2,
-     :instaparse.gll/start-column 6, :instaparse.gll/start-line 2,
-     :instaparse.gll/start-index 20, :instaparse.gll/end-index 22}]
+    {:instaparseclr.gll/end-column 8, :instaparseclr.gll/end-line 2,
+     :instaparseclr.gll/start-column 6, :instaparseclr.gll/start-line 2,
+     :instaparseclr.gll/start-index 20, :instaparseclr.gll/end-index 22}]
 
 start-line and start-column point to the same character as start-index, and end-line and end-column point to the same character as end-index.  So just like the regular span metadata, the line/column start point is inclusive and the end point is exclusive.  However, line and column numbers are 1-based counts, rather than 0-based.  So, for example, index number 0 of the string corresponds to line 1, column 1.
 
@@ -828,7 +828,7 @@ If you don't want to use `insta/visualize`, there is no need to add rhizome to y
 
 ### Combinators
 
-I truly believe that ordinary EBNF notation is the clearest, most concise way to express a context-free grammar.  Nevertheless, there may be times when it is useful to build parsers with parser combinators.  If you want to use instaparse in this way, you'll need to use the `instaparse.combinators` namespace.  If you are not interested in the combinator interface, feel free to skip this section -- the combinators provide no additional power or expressiveness over the string representation.
+I truly believe that ordinary EBNF notation is the clearest, most concise way to express a context-free grammar.  Nevertheless, there may be times when it is useful to build parsers with parser combinators.  If you want to use instaparse in this way, you'll need to use the `instaparseclr.combinators` namespace.  If you are not interested in the combinator interface, feel free to skip this section -- the combinators provide no additional power or expressiveness over the string representation.
 
 Each construct you've seen from the string specification has a corresponding parser combinator.  Most are straightforward, but the last few lines of the table will require some additional explanation.
 
@@ -890,7 +890,7 @@ Hopefully this will all be clarified with an example.  Do you remember the parse
 
 Well, here's the corresponding grammar map:
 
-	(use 'instaparse.combinators)
+	(use 'instaparseclr.combinators)
 
 	(def abc-grammar-map
 	  {:S (cat (look (cat (nt :A) (string "c")))
@@ -909,7 +909,7 @@ To my eye, the string is dramatically more readable, but if you need or want to 
 
 #### String to combinator conversion
 
-Shortly after I published the first version of instaparse, I received a question, "String specifications can be combined with `clojure.string/join` and combinator grammar maps can be combined with `merge` --- is there any way to mix and match string and combinator grammar representations?"  At the time, there wasn't, but now there is.  As of version 1.1, there is a new function `ebnf` in the `instaparse.combinators` namespace which *converts* EBNF strings into the same underlying structure that is built by the combinator library, thus allowing for further manipulation by combinators.  (EBNF stands for Extended Backus-Naur Form, the technical name for the syntax used by instaparse and described in this tutorial.)  For example,
+Shortly after I published the first version of instaparse, I received a question, "String specifications can be combined with `clojure.string/join` and combinator grammar maps can be combined with `merge` --- is there any way to mix and match string and combinator grammar representations?"  At the time, there wasn't, but now there is.  As of version 1.1, there is a new function `ebnf` in the `instaparseclr.combinators` namespace which *converts* EBNF strings into the same underlying structure that is built by the combinator library, thus allowing for further manipulation by combinators.  (EBNF stands for Extended Backus-Naur Form, the technical name for the syntax used by instaparse and described in this tutorial.)  For example,
 
 	(ebnf "'a'* | 'b'+")
 
@@ -982,7 +982,7 @@ All the functionality you've seen in this tutorial is packed into an API of just
 
 	=> (doc insta/parser)
 	-------------------------
-	instaparse.core/parser
+	instaparseclr.core/parser
 	([grammar-specification & {:as options}])
 	  Takes a string specification of a context-free grammar,
 	   or a URI for a text file containing such a specification,
@@ -1012,7 +1012,7 @@ All the functionality you've seen in this tutorial is packed into an API of just
 
 	=> (doc insta/parse)
 	-------------------------
-	instaparse.core/parse
+	instaparseclr.core/parse
 	([parser text & {:as options}])
 	  Use parser to parse the text.  Returns first parse tree found
 	   that completely parses the text.  If no parse tree is possible, returns
@@ -1027,7 +1027,7 @@ All the functionality you've seen in this tutorial is packed into an API of just
 
 	=> (doc insta/parses)
 	-------------------------
-	instaparse.core/parses
+	instaparseclr.core/parses
 	([parser text & {:as options}])
 	  Use parser to parse the text.  Returns lazy seq of all parse trees
 	   that completely parse the text.  If no parse tree is possible, returns
@@ -1041,25 +1041,25 @@ All the functionality you've seen in this tutorial is packed into an API of just
 
 	=> (doc insta/set-default-output-format!)
 	-------------------------
-	instaparse.core/set-default-output-format!
+	instaparseclr.core/set-default-output-format!
 	([type])
 	  Changes the default output format.  Input should be :hiccup or :enlive
 
 	=> (doc insta/failure?)
 	-------------------------
-	instaparse.core/failure?
+	instaparseclr.core/failure?
 	([result])
 	  Tests whether a parse result is a failure.
 
 	=> (doc insta/get-failure)
 	-------------------------
-	instaparse.core/get-failure
+	instaparseclr.core/get-failure
 	([result])
 	  Extracts failure object from failed parse result.
 
 	=> (doc insta/transform)
 	-------------------------
-	instaparse.core/transform
+	instaparseclr.core/transform
 	([transform-map parse-tree])
 	  Takes a transform map and a parse tree (or seq of parse-trees).
 	   A transform map is a mapping from tags to
@@ -1070,7 +1070,7 @@ All the functionality you've seen in this tutorial is packed into an API of just
 
 	=> (doc insta/span)
 	-------------------------
-	instaparse.core/span
+	instaparseclr.core/span
 	([tree])
 	  Takes a subtree of the parse tree and returns a [start-index end-index] pair
 	   indicating the span of text parsed by this subtree.
@@ -1080,20 +1080,20 @@ All the functionality you've seen in this tutorial is packed into an API of just
 
     => (doc insta/add-line-and-column-info-to-metadata)
     -------------------------
-    instaparse.core/add-line-and-column-info-to-metadata
+    instaparseclr.core/add-line-and-column-info-to-metadata
     ([text parse-tree])
       Given a string `text` and a `parse-tree` for text, return parse tree
        with its metadata annotated with line and column info. The info can
        then be found in the metadata map under the keywords:
 
-      :instaparse.gll/start-line, :instaparse.gll/start-column,
-      :instaparse.gll/end-line, :instaparse.gll/end-column
+      :instaparseclr.gll/start-line, :instaparseclr.gll/start-column,
+      :instaparseclr.gll/end-line, :instaparseclr.gll/end-column
 
       The start is inclusive, the end is exclusive. Lines and columns are 1-based.
 
 	=> (doc insta/visualize)
 	-------------------------
-	instaparse.core/visualize
+	instaparseclr.core/visualize
 	([tree & {output-file :output-file, options :options}])
 	  Creates a graphviz visualization of the parse tree.
 	   Optional keyword arguments:

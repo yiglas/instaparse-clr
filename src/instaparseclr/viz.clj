@@ -1,10 +1,10 @@
-(ns instaparse.viz
+(ns instaparseclr.viz
   (:import java.io.IOException))   
 
 (try 
   (require '[rhizome.viz :as r])
   (catch Exception e
-    (require '[instaparse.viz-not-found :as r])))
+    (require '[instaparseclr.viz-not-found :as r])))
 
 (defn span
   "Takes a subtree of the parse tree and returns a [start-index end-index] pair
@@ -14,8 +14,8 @@
    Returns nil if no span metadata is attached."
   [tree]
   (let [m (meta tree)
-        s (:instaparse.gll/start-index m)
-        e (:instaparse.gll/end-index m)]
+        s (:instaparseclr.gll/start-index m)
+        e (:instaparseclr.gll/end-index m)]
     (when (and s e)
       [s e])))
 

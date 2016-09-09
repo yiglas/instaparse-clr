@@ -76,7 +76,7 @@ Here is the doc string:
 
 	=> (doc insta/set-default-input-format!)
 	-------------------------
-	instaparse.core/set-default-input-format!
+	instaparseclr.core/set-default-input-format!
 	([type])
 	  Changes the default input format.  Input should be :abnf or :ebnf
 
@@ -160,7 +160,7 @@ LWSP is particularly quirky, defined to be either a space or tab character, or a
 
 ## Combinators
 
-The `instaparse.combinators` contains a few combinators that are not documented in the main tutorial, but are listed here because they are only relevant to ABNF grammars.
+The `instaparseclr.combinators` contains a few combinators that are not documented in the main tutorial, but are listed here because they are only relevant to ABNF grammars.
 
 <table>
 <tr><th>String syntax</th><th>Combinator</th><th>Functionality</th></tr>
@@ -182,14 +182,14 @@ A lesser-known quirk of ABNF syntax is that, in theory, non-terminal rule names 
 
 Therefore, by default in instaparse, ABNF non-terminals are in fact, case-sensitive.  This makes it easier for ABNF grammars to play nicely with EBNF grammars, grammar maps, and instaparse's transform function, all of which are case-sensitive.
 
-If you find yourself working with an ABNF grammar that uses an inconsistent mix of lowercase and uppercase letters to refer to the same non-terminal rules, you have two options available to you.  The first possibility, of course, is to simply go through and fix the inconsistencies.  The second option is to bind the dynamic variable `instaparse.abnf/*case-insensitive*` to true while building the parser from the ABNF grammar.
+If you find yourself working with an ABNF grammar that uses an inconsistent mix of lowercase and uppercase letters to refer to the same non-terminal rules, you have two options available to you.  The first possibility, of course, is to simply go through and fix the inconsistencies.  The second option is to bind the dynamic variable `instaparseclr.abnf/*case-insensitive*` to true while building the parser from the ABNF grammar.
 
 Under the hood, this works by *converting all non-terminals to uppercase*.  This means that in the resulting parse tree, all the rule names will be uppercase, so plan your tree traversals and transformations accordingly.
 
 As an example, let's revisit the usage example from above:
 
 	(def phone-uri-parser
-	  (binding [instaparse.abnf/*case-insensitive* true]
+	  (binding [instaparseclr.abnf/*case-insensitive* true]
 	    (insta/parser "https://raw.github.com/Engelberg/instaparse/master/test/instaparse/phone_uri.txt"
 	                  :input-format :abnf)))
 

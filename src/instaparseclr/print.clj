@@ -1,4 +1,4 @@
-(ns instaparse.print
+(ns instaparseclr.print
   "Facilities for taking parsers and grammars, and converting them to strings.
    Used for pretty-printing."
   (:require [clojure.string :as str]))

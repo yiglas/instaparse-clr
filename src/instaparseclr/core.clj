@@ -259,7 +259,7 @@ This is called implicitly the first time you invoke a parser with
   []
   (alter-var-root #'gll/TRACE (constantly true))
   (alter-var-root #'gll/PROFILE (constantly true))
-  (require 'instaparse.gll :reload))
+  (require 'instaparseclr.gll :reload))
 
 (defn disable-tracing!
   "Recompiles instaparse with tracing disabled.
@@ -268,7 +268,7 @@ the small performance hit imposed by tracing."
   []
   (alter-var-root #'gll/TRACE (constantly false))
   (alter-var-root #'gll/PROFILE (constantly false))
-  (require 'instaparse.gll :reload))  
+  (require 'instaparseclr.gll :reload))  
 
 (defclone span viz/span)
    

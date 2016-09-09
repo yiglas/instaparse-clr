@@ -1,9 +1,9 @@
-(ns instaparse.cfg
+(ns instaparseclr.cfg
   "This is the context free grammar that recognizes context free grammars."
   (:refer-clojure :exclude [cat])
-  (:use instaparse.combinators-source)
-  (:use [instaparse.reduction :only [apply-standard-reductions]])
-  (:use [instaparse.gll :only [parse]])
+  (:use instaparseclr.combinators-source)
+  (:use [instaparseclr.reduction :only [apply-standard-reductions]])
+  (:use [instaparseclr.gll :only [parse]])
   (:require [clojure.string :as str]))
 
 (def ^:dynamic *case-insensitive-literals*
@@ -20,9 +20,9 @@
 
 (def opt-whitespace (hide (nt :opt-whitespace)))
 
-(def cfg 
-  (apply-standard-reductions 
-    :hiccup    ; use the hiccup output format 
+(def cfg
+  (apply-standard-reductions
+    :hiccup    ; use the hiccup output format
     {:rules (hide-tag (cat opt-whitespace
                            (plus (nt :rule))))
      :comment (cat (string "(*") (nt :inside-comment) (string "*)"))
@@ -43,7 +43,7 @@
                 opt-whitespace
                 (nt :alt-or-ord)
                 (hide (alt (nt :opt-whitespace)
-                           (cat (nt :opt-whitespace) (alt (string ";") (string ".")) (nt :opt-whitespace)))))          
+                           (cat (nt :opt-whitespace) (alt (string ";") (string ".")) (nt :opt-whitespace)))))
      :nt (cat
            (neg (nt :epsilon))
            (regexp "[^, \\r\\t\\n<>(){}\\[\\]+*?:=|'\"#&!;./]+(?x) #Non-terminal"))
@@ -53,7 +53,7 @@
                         opt-whitespace
                         (hide (string ">")))
           :alt-or-ord (hide-tag (alt (nt :alt) (nt :ord)))
-          :alt (cat (nt :cat)                           
+          :alt (cat (nt :cat)
                     (star
                       (cat
                         opt-whitespace
@@ -73,7 +73,7 @@
                       opt-whitespace
                       (hide (string ")")))
           :hide (cat (hide (string "<"))
-                     opt-whitespace	
+                     opt-whitespace
                      (nt :alt-or-ord)
                      opt-whitespace
                      (hide (string ">")))
@@ -122,7 +122,7 @@
           :factor (hide-tag (alt (nt :nt)
                                  (nt :string)
                                  (nt :regexp)
-                                 (nt :opt)     
+                                 (nt :opt)
                                  (nt :star)
                                  (nt :plus)
                                  (nt :paren)
@@ -152,13 +152,13 @@
              (throw (RuntimeException. (format "Encountered backslash character at end of string: %s" s))))
         \" (recur (next sq) (conj v \\ \"))
         (recur (next sq) (conj v c)))
-      (apply str v))))                     
+      (apply str v))))
 
 ;(defn safe-read-string [s]
 ;  (binding [*read-eval* false]
 ;    (read-string s)))
 
-(defn wrap-reader [reader] 
+(defn wrap-reader [reader]
   (let [{major :major minor :minor} *clojure-version*]
     (if (and (<= major 1) (<= minor 6))
       reader
@@ -186,7 +186,7 @@
         remove-escaped-single-quotes
         (escape stripped)
         final-string
-        (safe-read-string (str remove-escaped-single-quotes \"))]            
+        (safe-read-string (str remove-escaped-single-quotes \"))]
 
     final-string))
 
@@ -201,7 +201,7 @@
         final-string
         (re-pattern remove-escaped-single-quotes)]
 ;        (safe-read-regexp (str remove-escaped-single-quotes \"))]
-        
+
     final-string))
 
 ;;; Now we need to convert the grammar's parse tree into combinators
@@ -240,9 +240,9 @@
     (:string :string-ci :char :regexp :epsilon) []
     (:opt :plus :star :look :neg :rep) (recur (:parser parser))
     (:alt :cat) (mapcat seq-nt (:parsers parser))
-    :ord (mapcat seq-nt 
-                 [(:parser1 parser) (:parser2 parser)])))                 
-    
+    :ord (mapcat seq-nt
+                 [(:parser1 parser) (:parser2 parser)])))
+
 (defn check-grammar
   "Throw error if grammar uses any invalid non-terminals in its productions"
   [grammar-map]
@@ -252,21 +252,21 @@
         (throw (RuntimeException. (format "%s occurs on the right-hand side of your grammar, but not on the left"
                                           (subs (str nt) 1)))))))
   grammar-map)
-          
+
 (defn build-parser [spec output-format]
   (let [rules (parse cfg :rules spec false)]
-    (if (instance? instaparse.gll.Failure rules)
+    (if (instance? instaparseclr.gll.Failure rules)
       (throw (RuntimeException. (str "Error parsing grammar specification:\n"
                                     (with-out-str (println rules)))))
       (let [productions (map build-rule rules)
-            start-production (first (first productions))] 
+            start-production (first (first productions))]
         {:grammar (check-grammar (apply-standard-reductions output-format (into {} productions)))
          :start-production start-production
          :output-format output-format}))))
 
 (defn build-parser-from-combinators [grammar-map output-format start-production]
   (if (nil? start-production)
-    (throw (IllegalArgumentException. 
+    (throw (IllegalArgumentException.
              "When you build a parser from a map of parser combinators, you must provide a start production using the :start keyword argument."))
     {:grammar (check-grammar (apply-standard-reductions output-format grammar-map))
      :start-production start-production
@@ -275,12 +275,12 @@
 (defn ebnf
   "Takes an EBNF grammar specification string and returns the combinator version.
 If you give it the right-hand side of a rule, it will return the combinator equivalent.
-If you give it a series of rules, it will give you back a grammar map.   
+If you give it a series of rules, it will give you back a grammar map.
 Useful for combining with other combinators."
   [spec]
   (let [rules (parse cfg :rules-or-parser spec false)]
     (cond
-      (instance? instaparse.gll.Failure rules)
+      (instance? instaparseclr.gll.Failure rules)
       (throw (RuntimeException. (str "Error parsing grammar specification:\n"
                                      (with-out-str (println rules)))))
       (= :rule (ffirst rules))

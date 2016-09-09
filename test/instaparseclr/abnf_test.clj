@@ -1,10 +1,10 @@
-(ns instaparse.abnf-test
+(ns instaparseclr.abnf-test
   (:use clojure.test)
-  (:use instaparse.core)
-  (:require [instaparse.combinators :refer [abnf]]))
+  (:use instaparseclr.core)
+  (:require [instaparseclr.combinators :refer [abnf]]))
 
 (deftest abnf-uri
-  (let [uri-parser (binding [instaparse.abnf/*case-insensitive* true]
+  (let [uri-parser (binding [instaparseclr.abnf/*case-insensitive* true]
                      (parser (slurp "test/instaparse/abnf_uri.txt") :input-format :abnf))]
     (are [x y] (= x y)
          (uri-parser "http://www.google.com")
@@ -29,7 +29,7 @@
          [:URI [:SCHEME [:ALPHA "l"] [:ALPHA "d"] [:ALPHA "a"] [:ALPHA "p"]] ":" [:HIER-PART "//" [:AUTHORITY [:HOST [:IP-LITERAL "[" [:IPV6ADDRESS [:H16 [:HEXDIG "2"] [:HEXDIG "0"] [:HEXDIG "0"] [:HEXDIG "1"]] ":" [:H16 [:HEXDIG "d"] [:HEXDIG "b"] [:HEXDIG "8"]] "::" [:H16 [:HEXDIG "7"]]] "]"]]] [:PATH-ABEMPTY "/" [:SEGMENT [:PCHAR [:UNRESERVED [:ALPHA "c"]]] [:PCHAR [:SUB-DELIMS "="]] [:PCHAR [:UNRESERVED [:ALPHA "G"]]] [:PCHAR [:UNRESERVED [:ALPHA "B"]]]]]] "?" [:QUERY [:PCHAR [:UNRESERVED [:ALPHA "o"]]] [:PCHAR [:UNRESERVED [:ALPHA "b"]]] [:PCHAR [:UNRESERVED [:ALPHA "j"]]] [:PCHAR [:UNRESERVED [:ALPHA "e"]]] [:PCHAR [:UNRESERVED [:ALPHA "c"]]] [:PCHAR [:UNRESERVED [:ALPHA "t"]]] [:PCHAR [:UNRESERVED [:ALPHA "C"]]] [:PCHAR [:UNRESERVED [:ALPHA "l"]]] [:PCHAR [:UNRESERVED [:ALPHA "a"]]] [:PCHAR [:UNRESERVED [:ALPHA "s"]]] [:PCHAR [:UNRESERVED [:ALPHA "s"]]] "?" [:PCHAR [:UNRESERVED [:ALPHA "o"]]] [:PCHAR [:UNRESERVED [:ALPHA "n"]]] [:PCHAR [:UNRESERVED [:ALPHA "e"]]]]])))
          
 (deftest phone-uri
-  (let [phone-uri-parser (binding [instaparse.abnf/*case-insensitive* true]
+  (let [phone-uri-parser (binding [instaparseclr.abnf/*case-insensitive* true]
                            (parser (slurp "test/instaparse/phone_uri.txt") :input-format :abnf))]
     (are [x y] (= x y)
          (phone-uri-parser "tel:+1-201-555-0123")
@@ -111,13 +111,13 @@ to test the lookahead"
     :input-format :abnf))
 
 (deftest rep-test
-  (are [x] (not (instance? instaparse.gll.Failure x))
+  (are [x] (not (instance? instaparseclr.gll.Failure x))
        (reps "aabbccddeefgfg")
        (reps "bbbbbbddeeeefgfg")
        (reps "bbcddeefgfg")))
 
 (deftest rep-test-errors
-  (are [x] (instance? instaparse.gll.Failure x)
+  (are [x] (instance? instaparseclr.gll.Failure x)
        (reps "")
        (reps "bccddeefgfg")
        (reps "aaaabbbbcccddeefgfg")
@@ -134,8 +134,8 @@ to test the lookahead"
   (doseq [i (range 1 (inc 100))
           :let [c (char i)]]
     (if (<= 42 i 91)
-      (is (not (instance? instaparse.gll.Failure (regex-chars (str c)))))
-      (is (instance? instaparse.gll.Failure (regex-chars (str c)))))))
+      (is (not (instance? instaparseclr.gll.Failure (regex-chars (str c)))))
+      (is (instance? instaparseclr.gll.Failure (regex-chars (str c)))))))
 
 (deftest unicode-test
   (let [poop "\uD83D\uDCA9"]  ; U+1F4A9 PILE OF POO
@@ -143,7 +143,7 @@ to test the lookahead"
                           :input-format :abnf)]
       (are [x y] (= x y)
            (parses parser1 poop) [[:S poop]])
-      (are [x] (instance? instaparse.gll.Failure x)
+      (are [x] (instance? instaparseclr.gll.Failure x)
            (parser1 (str poop poop))
            (parser1 (str (first poop)))
            ;; shouldn't work on the surrogate characters individually
@@ -152,7 +152,7 @@ to test the lookahead"
                           :input-format :abnf)]
       (are [x y] (= x y)
            (parses parser2 poop) [[:S poop]])
-      (are [x] (instance? instaparse.gll.Failure x)
+      (are [x] (instance? instaparseclr.gll.Failure x)
            (parser2 (str poop poop))
            (parser2 (str (first poop)))
            (parser2 (str (second poop)))))
@@ -160,14 +160,14 @@ to test the lookahead"
                           :input-format :abnf)]
       (are [x y] (= x y)
            (parses parser3 (str poop poop poop)) [[:S poop poop poop]])
-      (are [x] (instance? instaparse.gll.Failure x)
+      (are [x] (instance? instaparseclr.gll.Failure x)
            (parser3 (str poop))))
     ;; it would be cool if EBNF supported unicode in a parser spec
     ;; (ABNF doesn't allow that though)
     (let [parser4 (parser (str "S = '" poop "'*"))]
       (are [x y] (= x y)
            (parses parser4 (str poop poop poop)) [[:S poop poop poop]])
-      (are [x] (instance? instaparse.gll.Failure x)
+      (are [x] (instance? instaparseclr.gll.Failure x)
            (parser4 (str (first poop)))
            (parser4 (str (second poop)))
            (parser4 (str poop poop (first poop)))))))

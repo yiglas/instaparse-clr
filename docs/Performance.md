@@ -12,7 +12,7 @@ If you can do that, great!  If there's already a parser written for the kind of 
 
 That's where instaparse comes in.  Instaparse can handle arbitrary context-free grammars written using standard notation, so it's easy to apply it, even for a quickie one-time parsing task.
 
-Shortly after the release of instaparse, there were a couple great testimonial blog posts about instaparse.  [This blog post by Brandon Harvey](http://walkwithoutrhythm.net/blog/2013/05/16/instaparse-parsing-with-clojure-is-the-new-black/) especially made my day, because it perfectly captured what I had hoped to achieve with instaparse.
+Shortly after the release of instaparse, there were a couple great testimonial blog posts about instaparseclr.  [This blog post by Brandon Harvey](http://walkwithoutrhythm.net/blog/2013/05/16/instaparse-parsing-with-clojure-is-the-new-black/) especially made my day, because it perfectly captured what I had hoped to achieve with instaparseclr.
 
 In his blog post, Brandon describes some cave data that he wanted to parse.  Ideally, he wanted to figure out how to get "from a big fat unwieldy string to a nice, regular tree-shaped data structure in 20 minutes or less."  The cave data is clearly structured and looks kind of like JSON, but it isn't quite JSON.
 
@@ -43,7 +43,7 @@ Here is the gist of my optimization process: I take a grammar, try it on increas
 
 As I mentioned in the tutorial, one of the first things I noticed in my profiling was how critical hashing was.  This is a great example of how an algorithm that seems like it *should* be linear can go awry without careful attention to implementation details.  We all know that inserting something into a hash map is essentially constant time, so we take that for granted in our analysis.  As long as the algorithm only performs O(n) insertions/lookups in the hash table, it should have linear performance, right?  Well, if the thing you are inserting into the hash table takes O(n) time to compute the hash, you're in big trouble!
 
-So the first big accomplishment of my optimization efforts was to reduce the hashing time to constant for all the information cached by instaparse.  Version 1.2 of instaparse sports two new equally significant performance improvements:
+So the first big accomplishment of my optimization efforts was to reduce the hashing time to constant for all the information cached by instaparseclr.  Version 1.2 of instaparse sports two new equally significant performance improvements:
 
 First, I discovered that on long texts with long repeating sequences, linear-time concatenation of the internal partial tree results was a huge bottleneck, leading to overall quadratic behavior.  So in 1.2, I converted over to using a custom data structure with O(1) concatentation.  RRB-trees would be another data structure that could potentially solve my concatenation problem, so this is something I intend to look at after the Clojure implementation of RRB-trees matures.
 

@@ -1,6 +1,6 @@
 # Instaparse Experimental Features
 
-This document provides an explanation of some of the things I'm experimenting with in instaparse.  Please try the new features and let me know what you think.
+This document provides an explanation of some of the things I'm experimenting with in instaparseclr.  Please try the new features and let me know what you think.
 
 ## Optimizing memory
 
@@ -49,7 +49,7 @@ I have received several requests for instaparse to support the parsing of stream
 1. For some grammars, explicitly specifying all the places where whitespace can go is a pain.
 2. For parsing indentation-sensitive languages, it is useful to have a pre-processing pass that identifies `indent` and `dedent` tokens.
 
-I'm still thinking about developing a token-processing version of instaparse.  But if I can find a way to address the underlying needs while maintaining the "token-free" simplicity of instaparse, that would be even better.
+I'm still thinking about developing a token-processing version of instaparseclr.  But if I can find a way to address the underlying needs while maintaining the "token-free" simplicity of instaparse, that would be even better.
 
 This new experimental "auto whitespace" feature addresses the first issue, simplifying the specification of grammars where you pretty much want to allow optional whitespace between all your tokens.  Here's how to use the new feature:
 

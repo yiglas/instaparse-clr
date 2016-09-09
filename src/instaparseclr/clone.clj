@@ -1,4 +1,4 @@
-(ns instaparse.clone
+(ns instaparseclr.clone
   "A macro used to import vars with docstrings from one namespace to another")
 (defmacro defclone [here there]
   `(do 

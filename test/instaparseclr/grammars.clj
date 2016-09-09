@@ -1,9 +1,9 @@
-(ns instaparse.grammars
+(ns instaparseclr.grammars
   (:refer-clojure :exclude [cat])
   (:use clojure.test)
-  (:use instaparse.combinators instaparse.reduction)
-  (:require [instaparse.core :as insta])
-  (:require [instaparse.gll :as gll]))
+  (:use instaparseclr.combinators instaparseclr.reduction)
+  (:require [instaparseclr.core :as insta])
+  (:require [instaparseclr.gll :as gll]))
 
 (defn- parse [grammar start text]
   (gll/parse (apply-standard-reductions grammar) start text false))

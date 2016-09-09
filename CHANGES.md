@@ -10,7 +10,7 @@
 
 ### Features
 
-* New function `add-line-and-column-info-to-metadata` in the instaparse.core namespace.
+* New function `add-line-and-column-info-to-metadata` in the instaparseclr.core namespace.
 
 ### Enhancements
 

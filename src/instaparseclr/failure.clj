@@ -1,7 +1,7 @@
-(ns instaparse.failure
+(ns instaparseclr.failure
   "Facilities for printing and manipulating error messages."
   (:import java.io.BufferedReader java.io.StringReader)
-  (:require [instaparse.print :as print]))
+  (:require [instaparseclr.print :as print]))
 
 (defn index->line-column
   "Takes an index into text, and determines the line and column info"

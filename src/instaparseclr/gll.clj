@@ -1,4 +1,4 @@
-(ns instaparse.gll
+(ns instaparseclr.gll
   "The heart of the parsing mechanism.  Contains the trampoline structure,
    the parsing dispatch function, the nodes where listeners are stored,
    the different types of listeners, and the loop for executing the various
@@ -7,20 +7,20 @@
   ;; Incremental vector provides a more performant hashing strategy 
   ;; for this use-case for vectors
   ;; We use the auto flatten version
-  (:require [instaparse.auto-flatten-seq :as afs])
+  (:require [instaparseclr.auto-flatten-seq :as afs])
   
   ;; failure contains the augment-failure function, which is called to
   ;; add enough information to the failure object for pretty printing 
-  (:require [instaparse.failure :as fail])
+  (:require [instaparseclr.failure :as fail])
   
   ;; reduction contains code relating to reductions and flattening.
-  (:require [instaparse.reduction :as red])
+  (:require [instaparseclr.reduction :as red])
   
   ;; Two of the public combinators are needed.
-  (:require [instaparse.combinators-source :refer [Epsilon nt]])
+  (:require [instaparseclr.combinators-source :refer [Epsilon nt]])
   
   ;; Need a way to convert parsers into strings for printing and error messages.
-  (:require [instaparse.print :as print])  
+  (:require [instaparseclr.print :as print])  
   )
 
 ;; As of Java 7, strings no longer have fast substring operation,
@@ -66,7 +66,7 @@
 ;; tracing code.
 ;;
 ;; bind-trace is the one exception where we can't completely compile
-;; the new code away, because it is used in instaparse.core, which won't be
+;; the new code away, because it is used in instaparseclr.core, which won't be
 ;; recompiled.  Still, binding is a relatively slow operation, so by testing
 ;; whether TRACE is true inside the expansion, we can at least avoid 
 ;; the performance hit of binding every time.

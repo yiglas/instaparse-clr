@@ -1,5 +1,5 @@
-(ns instaparse.auto-flatten-seq-test
-  (:use clojure.test instaparse.auto-flatten-seq))
+(ns instaparseclr.auto-flatten-seq-test
+  (:use clojure.test instaparseclr.auto-flatten-seq))
 
 (defn rand-mutation [v iv]
   (let [rnd (int (rand-int 3))]

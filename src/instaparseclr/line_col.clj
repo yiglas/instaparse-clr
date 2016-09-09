@@ -1,5 +1,5 @@
-(ns instaparse.line-col
-  (:require instaparse.transform))
+(ns instaparseclr.line-col
+  (:require instaparseclr.transform))
 
 ; Function to annotate parse-tree with line and column metadata.
 
@@ -28,8 +28,8 @@ inputs must be fed into the function in increasing order."
 (defn- hiccup-add-line-col-spans
   [line-col-fn parse-tree]
   (let [m (meta parse-tree), 
-        start-index (:instaparse.gll/start-index m), 
-        end-index (:instaparse.gll/end-index m)]
+        start-index (:instaparseclr.gll/start-index m), 
+        end-index (:instaparseclr.gll/end-index m)]
     (if (and start-index end-index)
       (let [start-cursor (line-col-fn start-index),
             children (doall (map (partial hiccup-add-line-col-spans line-col-fn) (next parse-tree))),
@@ -37,17 +37,17 @@ inputs must be fed into the function in increasing order."
         (with-meta
           (into [(first parse-tree)] children)
           (merge (meta parse-tree) 
-                 {:instaparse.gll/start-line (:line start-cursor)
-                  :instaparse.gll/start-column (:column start-cursor)
-                  :instaparse.gll/end-line (:line end-cursor)
-                  :instaparse.gll/end-column (:column end-cursor)})))
+                 {:instaparseclr.gll/start-line (:line start-cursor)
+                  :instaparseclr.gll/start-column (:column start-cursor)
+                  :instaparseclr.gll/end-line (:line end-cursor)
+                  :instaparseclr.gll/end-column (:column end-cursor)})))
       parse-tree)))
 
 (defn- enlive-add-line-col-spans
   [line-col-fn parse-tree]
   (let [m (meta parse-tree), 
-        start-index (:instaparse.gll/start-index m), 
-        end-index (:instaparse.gll/end-index m)]
+        start-index (:instaparseclr.gll/start-index m), 
+        end-index (:instaparseclr.gll/end-index m)]
     (if (and start-index end-index)
       (let [start-cursor (line-col-fn start-index),
             children (doall (map (partial enlive-add-line-col-spans line-col-fn) (:content parse-tree))),
@@ -55,10 +55,10 @@ inputs must be fed into the function in increasing order."
         (with-meta
           (assoc parse-tree :content children)
           (merge (meta parse-tree) 
-                 {:instaparse.gll/start-line (:line start-cursor)
-                  :instaparse.gll/start-column (:column start-cursor)
-                  :instaparse.gll/end-line (:line end-cursor)
-                  :instaparse.gll/end-column (:column end-cursor)})))
+                 {:instaparseclr.gll/start-line (:line start-cursor)
+                  :instaparseclr.gll/start-column (:column start-cursor)
+                  :instaparseclr.gll/end-line (:line end-cursor)
+                  :instaparseclr.gll/end-column (:column end-cursor)})))
       parse-tree)))
   
 (defn add-line-col-spans
@@ -66,8 +66,8 @@ inputs must be fed into the function in increasing order."
 with its metadata annotated with line and column info. The info can
 then be found in the metadata map under the keywords:
  
-:instaparse.gll/start-line, :instaparse.gll/start-column,
-:instaparse.gll/end-line, :instaparse.gll/end-column
+:instaparseclr.gll/start-line, :instaparseclr.gll/start-column,
+:instaparseclr.gll/end-line, :instaparseclr.gll/end-column
 
 The start is inclusive, the end is exclusive. Lines and columns are 1-based."
   [text parse-tree]
@@ -85,15 +85,15 @@ The start is inclusive, the end is exclusive. Lines and columns are 1-based."
       
       (and (sequential? parse-tree) (map? (first parse-tree)) (:tag (first parse-tree)))
       ; This is an enlive tree with hidden root tag
-      (instaparse.transform/map-preserving-meta 
+      (instaparseclr.transform/map-preserving-meta 
         (partial enlive-add-line-col-spans line-col-fn) parse-tree)
       
       (and (sequential? parse-tree) (vector? (first parse-tree)) (keyword? (first (first parse-tree))))
       ; This is a hiccup tree with hidden root tag
-      (instaparse.transform/map-preserving-meta 
+      (instaparseclr.transform/map-preserving-meta 
         (partial hiccup-add-line-col-spans line-col-fn) parse-tree)
 
-      (instance? instaparse.gll.Failure parse-tree)
+      (instance? instaparseclr.gll.Failure parse-tree)
       ; pass failures through unchanged
       parse-tree
     

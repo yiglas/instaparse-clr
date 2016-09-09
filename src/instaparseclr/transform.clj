@@ -1,6 +1,6 @@
-(ns instaparse.transform
+(ns instaparseclr.transform
   "Functions to transform parse trees"
-  (:require instaparse.gll))
+  (:require instaparseclr.gll))
 
 (defn map-preserving-meta [f l]
   (with-meta (map f l) (meta l)))
@@ -10,7 +10,7 @@
 something that can have a metamap attached."
   [obj metamap]
   (if (instance? clojure.lang.IObj obj)
-    (instaparse.gll/merge-meta obj metamap)
+    (instaparseclr.gll/merge-meta obj metamap)
     obj))
 
 (defn- enlive-transform
@@ -66,9 +66,9 @@ something that can have a metamap attached."
     ; with a hidden root tag.
     (map-preserving-meta (partial transform transform-map) parse-tree)
     
-    (instance? instaparse.gll.Failure parse-tree)
+    (instance? instaparseclr.gll.Failure parse-tree)
     ; pass failures through unchanged
     parse-tree
     
     :else
-    (throw (IllegalArgumentException. "Invalid parse-tree, not recognized as either enlive or hiccup format."))))
+    (throw (ArgumentException. "Invalid parse-tree, not recognized as either enlive or hiccup format."))))
